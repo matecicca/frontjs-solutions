@@ -21,15 +21,26 @@
         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Inicio</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ route('blog.index') }}">Blog</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ route('request.create') }}">Solicitar Servicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Admin</a></li>
-        @auth
-        <li class="nav-item">
-          <form action="{{ route('admin.logout') }}" method="POST" class="d-inline">
-            @csrf
-            <button class="btn btn-sm btn-outline-light ms-2">Salir</button>
-          </form>
-        </li>
+
+        @auth('web')
+          {{-- Usuario autenticado con guard web --}}
+          <li class="nav-item">
+            <span class="nav-link">Hola, {{ Auth::guard('web')->user()->name }}</span>
+          </li>
+          <li class="nav-item">
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+              @csrf
+              <button class="btn btn-sm btn-outline-light">Cerrar sesión</button>
+            </form>
+          </li>
+        @else
+          {{-- Usuario no autenticado --}}
+          <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Iniciar sesión</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Registrarse</a></li>
         @endauth
+
+        {{-- Enlace al panel de admin (siempre visible) --}}
+        <li class="nav-item"><a class="nav-link text-warning" href="{{ route('admin.dashboard') }}">Admin</a></li>
       </ul>
     </div>
   </div>
