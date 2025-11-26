@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
                 'name' => 'admin',
                 'email' => 'admin@frontjs-solutions.test',   // email fijo para referencia
                 'password' => Hash::make('pass123'),         // contraseña: pass123
+                'role' => 'admin',                           // asignar role de admin
             ]
         );
     }
