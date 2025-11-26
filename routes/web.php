@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\Admin\RequestAdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\UserAdminController;
 
 /*
 | Rutas públicas
@@ -66,4 +67,8 @@ Route::prefix('admin')->middleware(['auth:admin', 'admin'])->group(function () {
     // Listado y eliminación de solicitudes
     Route::get('requests', [RequestAdminController::class, 'index'])->name('admin.requests.index');
     Route::delete('requests/{id}', [RequestAdminController::class, 'destroy'])->name('admin.requests.destroy');
+
+    // Gestión de usuarios (solo lectura)
+    Route::get('users', [UserAdminController::class, 'index'])->name('admin.users.index');
+    Route::get('users/{user}', [UserAdminController::class, 'show'])->name('admin.users.show');
 });
