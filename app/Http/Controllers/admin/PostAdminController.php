@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Post;
+use Illuminate\Http\Request;
+
+class PostAdminController extends Controller
+{
+    public function index()
+    {
+        $posts = Post::latest()->get();
+        return view('admin.posts.index', compact('posts'));
+    }
+
+    public function create()
+    {
+        return view('admin.posts.create');
+    }
+
+    public function store(Request $request)
+{
+    $validated = $request->validate([
+        'titulo' => 'required|string|max:255',
+        'slug' => 'required|string|max:255|unique:posts',
+        'resumen' => 'required|string|max:500',
+        'contenido' => 'required|string',
+        'nombre_imagen' => 'nullable|string|max:100',
+        'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
+
+    // Subida de la imagen si existe
+    $imageName = null;
+    if ($request->hasFile('imagen')) {
+        // Si el usuario puso un nombre personalizado
+        $customName = $request->input('nombre_imagen');
+        $extension = $request->file('imagen')->getClientOriginalExtension();
+
+        // Si no puso nombre, usamos el original sin espacios
+        $imageName = $customName
+            ? str_replace(' ', '-', $customName) . '.' . $extension
+            : time() . '-' . $request->file('imagen')->getClientOriginalName();
+
+        $request->file('imagen')->move(public_path('images/blog'), $imageName);
+    }
+
+    // Guardamos el post
+    Post::create([
+        'titulo' => $validated['titulo'],
+        'slug' => $validated['slug'],
+        'resumen' => $validated['resumen'],
+        'contenido' => $validated['contenido'],
+        'imagen' => $imageName,
+    ]);
+
+    return redirect()->route('posts.index')->with('success', 'Post creado correctamente.');
+}
+
+    public function edit(Post $post)
+    {
+        return view('admin.posts.edit', compact('post'));
+    }
+
+    public function update(Request $request, Post $post)
+{
+    $validated = $request->validate([
+        'titulo' => 'required|string|max:255',
+        'slug' => 'required|string|max:255|unique:posts,slug,' . $post->id,
+        'resumen' => 'required|string|max:500',
+        'contenido' => 'required|string',
+        'nombre_imagen' => 'nullable|string|max:100',
+        'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
+
+    $imageName = $post->imagen; // mantener la actual por defecto
+
+    if ($request->hasFile('imagen')) {
+        $customName = $request->input('nombre_imagen');
+        $extension = $request->file('imagen')->getClientOriginalExtension();
+        $imageName = $customName
+            ? str_replace(' ', '-', $customName) . '.' . $extension
+            : time() . '-' . $request->file('imagen')->getClientOriginalName();
+
+        $request->file('imagen')->move(public_path('images/blog'), $imageName);
+    }
+
+    $post->update([
+        'titulo' => $validated['titulo'],
+        'slug' => $validated['slug'],
+        'resumen' => $validated['resumen'],
+        'contenido' => $validated['contenido'],
+        'imagen' => $imageName,
+    ]);
+
+    return redirect()->route('posts.index')->with('success', 'Post actualizado correctamente.');
+}
+
+
+    public function destroy(Post $post)
+    {
+        $post->delete();
+        return redirect()->route('posts.index')->with('success', 'Post eliminado.');
+    }
+}

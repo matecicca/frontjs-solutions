@@ -1,0 +1,9 @@
+Carrera: Diseño y Desarrollo Web
+Materia: Portales y Comercio Electrónico
+Cuatrimestre: 4to
+Año: 2025
+Turno: mañana
+Comisión: DWM4AP
+Apellido y nombre: Ciccarello Mateo
+Docente: Carlos Ferrer
+Carácter de entrega: 1er parcial
