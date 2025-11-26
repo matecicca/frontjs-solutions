@@ -54,9 +54,9 @@ Route::prefix('admin')->group(function () {
 });
 
 /*
-| Rutas del panel protegidas por autenticación
+| Rutas del panel protegidas por autenticación y verificación de role admin
 */
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', 'admin'])->group(function () {
     // Dashboard principal
     Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
 
