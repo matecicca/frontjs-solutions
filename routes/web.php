@@ -4,12 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\AuthController;
 
 // Controladores del panel
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\Admin\RequestAdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\UserAdminController;
 
 /*
 | Rutas públicas
@@ -25,13 +27,22 @@ Route::get('/solicitar', [RequestController::class, 'create'])->name('request.cr
 Route::post('/solicitar', [RequestController::class, 'store'])->name('request.store');
 
 /*
+| Rutas de autenticación para usuarios comunes (guard web)
+*/
+// Registro
+Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/registro', [AuthController::class, 'register'])->name('register.submit');
+
+// Login
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/*
 | Rutas de autenticación del panel de administración
 */
-
-// Esta ruta es necesaria para evitar errores del middleware "auth" (usa el guard por defecto)
-Route::get('/login', function () {
-    return redirect()->route('admin.login');
-})->name('login');
 
 // Login y logout del admin (sin middleware)
 Route::prefix('admin')->group(function () {
@@ -44,9 +55,9 @@ Route::prefix('admin')->group(function () {
 });
 
 /*
-| Rutas del panel protegidas por autenticación
+| Rutas del panel protegidas por autenticación y verificación de role admin
 */
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', 'admin'])->group(function () {
     // Dashboard principal
     Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
 
@@ -56,4 +67,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Listado y eliminación de solicitudes
     Route::get('requests', [RequestAdminController::class, 'index'])->name('admin.requests.index');
     Route::delete('requests/{id}', [RequestAdminController::class, 'destroy'])->name('admin.requests.destroy');
+
+    // Gestión de usuarios (solo lectura)
+    Route::get('users', [UserAdminController::class, 'index'])->name('admin.users.index');
+    Route::get('users/{user}', [UserAdminController::class, 'show'])->name('admin.users.show');
 });

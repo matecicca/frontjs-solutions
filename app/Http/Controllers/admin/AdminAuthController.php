@@ -5,43 +5,71 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class AdminAuthController extends Controller
 {
+    /**
+     * Muestra el formulario de login del panel.
+     * Si ya hay sesión admin, redirige al dashboard.
+     */
     public function showLoginForm()
     {
-        // Si ya está logueado, mandamos al dashboard
-        if (Auth::check()) {
+        if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
+
         return view('admin.auth.login');
     }
 
+    /**
+     * Procesa el login de administrador.
+     */
     public function login(Request $request)
     {
-        $request->validate([
-            'name'     => 'required|string',
-            'password' => 'required|string',
+        // Validación básica de credenciales
+        $credentials = $request->validate([
+            'name'     => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ], [
+            'name.required'     => 'El usuario es obligatorio.',
+            'password.required' => 'La contraseña es obligatoria.',
         ]);
 
-        // Recuperamos por 'name' (admin) y validamos password
-        $user = User::where('name', $request->name)->first();
+        // Intentar autenticar usando el guard 'admin'
+        // y asegurando que el usuario tenga role 'admin'
+        $remember = $request->boolean('remember');
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user, true);
+        $attempt = Auth::guard('admin')->attempt([
+            'name'     => $credentials['name'],
+            'password' => $credentials['password'],
+            'role'     => 'admin',
+        ], $remember);
+
+        if ($attempt) {
+            // Regenerar la sesión para evitar fixation
+            $request->session()->regenerate();
+
+            // Redirigir a la ruta que el usuario quería (si estaba protegida)
+            // o al dashboard principal del panel
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        return back()->withErrors(['name' => 'Credenciales inválidas'])->withInput();
+        // Si falla, mensaje genérico
+        return back()
+            ->withErrors(['name' => 'Las credenciales proporcionadas son incorrectas.'])
+            ->withInput();
     }
 
+    /**
+     * Cierra la sesión del administrador.
+     */
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('admin.login');
     }
 }

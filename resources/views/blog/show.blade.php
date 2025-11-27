@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -8,7 +11,9 @@
     <p class="text-muted mb-3"><small>Publicado el {{ $post->created_at->format('d/m/Y') }}</small></p>
 
     @if($post->imagen)
-        <img src="{{ asset('images/' . $post->imagen) }}" alt="{{ $post->titulo }}" class="img-fluid rounded shadow-sm mb-3">
+    <img src="{{ Storage::url($post->imagen) }}"
+         alt="{{ $post->titulo }}"
+         class="img-fluid rounded shadow-sm mb-3">
     @endif
 
     <article class="fs-5 lh-lg">
