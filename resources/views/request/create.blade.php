@@ -36,7 +36,7 @@
 
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" value="{{ old('email') }}"
+            <input type="email" name="email" id="email" value="{{ old('email', $userEmail ?? '') }}"
                    class="form-control @error('email') is-invalid @enderror" required>
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>

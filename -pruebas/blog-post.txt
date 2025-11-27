@@ -1,0 +1,7 @@
+¿Qué es Vite y como se utiliza en desarrollo web?
+
+Vite es un build tool (herramienta de construcción) creado por Evan You (el creador de Vue)
+
+Vite es una herramienta que permite levantar un servidor de desarrollo súper rápido, pensado para aprovechar al máximo las capacidades modernas del navegador. En lugar de empaquetar todo el proyecto cada vez que guardás un archivo, Vite sirve tu código utilizando ES Modules nativos, y sólo transforma lo que realmente hace falta, como componentes de Vue, React, TypeScript u otros lenguajes que necesitan compilación.
+
+Durante el desarrollo, esto significa que el proyecto no se recompila completo en cada cambio, sino que Vite actualiza sólo los módulos afectados, lo que hace que el arranque del servidor sea casi instantáneo y que las modificaciones se reflejen de inmediato en el navegador gracias al Hot Module Replacement (HMR). En cambio, cuando preparás el proyecto para producción, Vite sí genera un bundle optimizado utilizando Rollup por debajo: agrupa el código, lo minimiza, aplica splitting de archivos y optimiza los assets para que la aplicación cargue más rápido en el entorno final. El resultado es una experiencia de desarrollo muy fluida y eficiente, sin tiempos de espera largos y con un build final liviano y listo para desplegar.

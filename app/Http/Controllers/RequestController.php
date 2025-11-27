@@ -3,15 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Request as RequestModel;
 
 class RequestController extends Controller
 {
+    /**
+     * Muestra el formulario de solicitud de servicio.
+     * Si hay un usuario autenticado, precarga su email en el formulario.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
-        return view('request.create');
+        // Obtener el usuario autenticado (si existe) del guard 'web'
+        $user = Auth::guard('web')->user();
+
+        // Pasar el email del usuario autenticado a la vista (o null si no está autenticado)
+        $userEmail = $user ? $user->email : null;
+
+        return view('request.create', compact('userEmail'));
     }
 
+    /**
+     * Procesa y guarda una nueva solicitud de servicio.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         // Validaciones del formulario con mensajes personalizados

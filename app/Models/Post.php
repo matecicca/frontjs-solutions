@@ -9,6 +9,11 @@ class Post extends Model
 {
     use HasFactory;
 
+    /**
+     * Los atributos que son asignables en masa.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'titulo',
@@ -20,6 +25,9 @@ class Post extends Model
 
     /**
      * Relación: Un post pertenece a un usuario (autor).
+     * Relación Many-to-One con el modelo User.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function author()
     {

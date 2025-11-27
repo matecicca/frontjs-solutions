@@ -11,17 +11,34 @@ use Illuminate\Support\Str;
 
 class PostAdminController extends Controller
 {
+    /**
+     * Muestra el listado de todos los posts en el panel de administración.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $posts = Post::latest()->get();
         return view('admin.posts.index', compact('posts'));
     }
 
+    /**
+     * Muestra el formulario para crear un nuevo post.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('admin.posts.create');
     }
 
+    /**
+     * Guarda un nuevo post en la base de datos.
+     * Incluye validación y procesamiento de imagen opcional.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
 {
     $validated = $request->validate([
@@ -77,11 +94,25 @@ class PostAdminController extends Controller
     return redirect()->route('posts.index')->with('success', 'Post creado correctamente.');
 }
 
+    /**
+     * Muestra el formulario para editar un post existente.
+     *
+     * @param \App\Models\Post $post
+     * @return \Illuminate\View\View
+     */
     public function edit(Post $post)
     {
         return view('admin.posts.edit', compact('post'));
     }
 
+    /**
+     * Actualiza un post existente en la base de datos.
+     * Permite cambiar la imagen, eliminando la anterior si existe.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Post $post
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, Post $post)
 {
     $validated = $request->validate([
@@ -141,6 +172,13 @@ class PostAdminController extends Controller
     return redirect()->route('posts.index')->with('success', 'Post actualizado correctamente.');
 }
 
+    /**
+     * Elimina un post de la base de datos.
+     * También elimina la imagen asociada del storage si existe.
+     *
+     * @param \App\Models\Post $post
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Post $post)
 {
     // Si el post tiene imagen asociada, eliminarla del storage

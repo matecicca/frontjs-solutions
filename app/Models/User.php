@@ -48,9 +48,9 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is an admin.
+     * Verifica si el usuario tiene rol de administrador.
      *
-     * @return bool
+     * @return bool True si el usuario es admin, false en caso contrario
      */
     public function isAdmin(): bool
     {
@@ -59,6 +59,9 @@ class User extends Authenticatable
 
     /**
      * Relación: Un usuario tiene muchos posts.
+     * Relación One-to-Many con el modelo Post.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function posts()
     {

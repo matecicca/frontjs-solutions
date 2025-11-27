@@ -11,7 +11,9 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
-     * Muestra el formulario de registro.
+     * Muestra el formulario de registro de usuarios.
+     *
+     * @return \Illuminate\View\View
      */
     public function showRegisterForm()
     {
@@ -19,7 +21,10 @@ class AuthController extends Controller
     }
 
     /**
-     * Registra un nuevo usuario.
+     * Registra un nuevo usuario en el sistema.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function register(Request $request)
     {
@@ -53,7 +58,9 @@ class AuthController extends Controller
     }
 
     /**
-     * Muestra el formulario de login.
+     * Muestra el formulario de inicio de sesión.
+     *
+     * @return \Illuminate\View\View
      */
     public function showLoginForm()
     {
@@ -61,7 +68,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Autentica al usuario.
+     * Autentica al usuario y redirige según su rol.
+     * Usuarios admin son redirigidos al panel de administración con guard 'admin'.
+     * Usuarios comunes son redirigidos al home con guard 'web'.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request)
     {
@@ -102,7 +115,10 @@ class AuthController extends Controller
     }
 
     /**
-     * Cierra la sesión del usuario.
+     * Cierra la sesión del usuario en ambos guards por seguridad.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request)
     {

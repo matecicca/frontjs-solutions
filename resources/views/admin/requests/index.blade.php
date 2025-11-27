@@ -2,7 +2,10 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-3">Solicitudes de Servicio</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Solicitudes de Servicio</h1>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Volver al Panel</a>
+    </div>
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

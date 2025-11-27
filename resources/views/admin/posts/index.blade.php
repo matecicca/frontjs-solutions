@@ -2,7 +2,10 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-3">Listado de Posts</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Listado de Posts</h1>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Volver al Panel</a>
+    </div>
     <a href="{{ route('posts.create') }}" class="btn btn-primary mb-3">Nuevo Post</a>
 
     @if (session('success'))

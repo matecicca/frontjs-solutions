@@ -9,6 +9,11 @@ class Request extends Model
 {
     use HasFactory;
 
+    /**
+     * Los atributos que son asignables en masa.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'nombre',
         'email',
