@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostAdminController extends Controller
 {
@@ -45,8 +46,9 @@ class PostAdminController extends Controller
         $request->file('imagen')->move(public_path('images/blog'), $imageName);
     }
 
-    // Guardamos el post
+    // Guardamos el post con el usuario autenticado como autor
     Post::create([
+        'user_id' => Auth::guard('admin')->id(), // Asociar al usuario autenticado
         'titulo' => $validated['titulo'],
         'slug' => $validated['slug'],
         'resumen' => $validated['resumen'],
@@ -86,6 +88,7 @@ class PostAdminController extends Controller
     }
 
     $post->update([
+        'user_id' => $post->user_id ?? Auth::guard('admin')->id(), // Mantener autor o asignar si es null
         'titulo' => $validated['titulo'],
         'slug' => $validated['slug'],
         'resumen' => $validated['resumen'],
