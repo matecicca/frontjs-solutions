@@ -36,16 +36,26 @@ class AdminAuthController extends Controller
         ]);
 
         // Intentar autenticar usando el guard 'admin'
-        // y asegurando que el usuario tenga role 'admin'
         $remember = $request->boolean('remember');
 
         $attempt = Auth::guard('admin')->attempt([
             'name'     => $credentials['name'],
             'password' => $credentials['password'],
-            'role'     => 'admin',
         ], $remember);
 
         if ($attempt) {
+            // Verificar que el usuario autenticado tenga rol 'admin'
+            $user = Auth::guard('admin')->user();
+
+            if (!$user->isAdmin()) {
+                // No es admin, cerrar sesión y rechazar
+                Auth::guard('admin')->logout();
+
+                return back()
+                    ->withErrors(['name' => 'No tienes permisos de administrador.'])
+                    ->withInput();
+            }
+
             // Regenerar la sesión para evitar fixation
             $request->session()->regenerate();
 

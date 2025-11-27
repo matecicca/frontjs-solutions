@@ -1,0 +1,70 @@
+2️⃣ Dependencias PHP y JS
+
+En la raíz del proyecto:
+
+composer install
+npm install
+
+
+Si te pregunta cosas de php.ini o extensiones, hay que ir instalándolas, pero en principio debería andar como en la otra máquina.
+
+
+
+4️⃣ APP_KEY
+
+Si en el .env el campo APP_KEY está vacío:
+
+php artisan key:generate
+
+
+Si el .env ya trae APP_KEY del proyecto original, lo podés dejar tal cual.
+
+
+
+5️⃣ Base de datos
+
+Depende de si llevaste o no el archivo database.sqlite dentro del zip:
+
+Opción A: querés arrancar limpio (para demo / profe)
+php artisan migrate --seed
+
+
+O, si da alguna incompatibilidad:
+
+php artisan migrate:fresh --seed
+
+
+Con eso:
+
+Crea todas las tablas.
+
+Ejecuta los seeders → te genera el admin, el user claudio, posts de ejemplo, etc.
+
+
+
+6️⃣ Storage (muy importante al migrar)
+
+Cada vez que movés el proyecto de máquina:
+
+Borrá, si existe, el enlace viejo:
+
+Desde el explorador: borrás la carpeta/enlace public/storage.
+
+O por terminal:
+
+rm -rf public/storage
+
+
+Volvés a crear el link en la nueva máquina:
+
+php artisan storage:link
+
+
+Así las imágenes del blog que estén en storage/app/public/blog/... se verán en http://localhost:8000/storage/blog/....
+
+
+7️⃣ Levantar el proyecto
+
+En una terminal:
+
+php artisan serve
