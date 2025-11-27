@@ -82,9 +82,9 @@ class AuthController extends Controller
             return redirect()->intended('/')->with('success', '¡Bienvenido/a de nuevo!');
         }
 
-        // Si falla la autenticación
+        // Si falla la autenticación (mensaje genérico para no revelar si el email existe)
         throw ValidationException::withMessages([
-            'email' => 'Las credenciales no coinciden con nuestros registros.',
+            'email' => 'Las credenciales proporcionadas son incorrectas.',
         ]);
     }
 

@@ -14,13 +14,24 @@ class RequestController extends Controller
 
     public function store(Request $request)
     {
-        // Validaciones del formulario
+        // Validaciones del formulario con mensajes personalizados
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|max:255',
             'empresa' => 'nullable|string|max:255',
             'tipo_servicio' => 'required|string|max:255',
-            'descripcion_proyecto' => 'required|string|min:10',
+            'descripcion_proyecto' => 'required|string|min:10|max:1000',
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'nombre.max' => 'El nombre no puede exceder 255 caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'Debe ser un email válido.',
+            'email.max' => 'El email no puede exceder 255 caracteres.',
+            'empresa.max' => 'El nombre de la empresa no puede exceder 255 caracteres.',
+            'tipo_servicio.required' => 'Debe seleccionar un tipo de servicio.',
+            'descripcion_proyecto.required' => 'La descripción del proyecto es obligatoria.',
+            'descripcion_proyecto.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'descripcion_proyecto.max' => 'La descripción no puede exceder 1000 caracteres.',
         ]);
 
         // Guardar en la base de datos

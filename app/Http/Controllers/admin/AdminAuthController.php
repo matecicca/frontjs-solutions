@@ -12,8 +12,8 @@ class AdminAuthController extends Controller
 {
     public function showLoginForm()
     {
-        // Si ya está logueado, mandamos al dashboard
-        if (Auth::check()) {
+        // Si ya está logueado con guard admin, mandamos al dashboard
+        if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
         return view('admin.auth.login');
@@ -21,25 +21,33 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
+        // Validación con mensajes personalizados
         $request->validate([
             'name'     => 'required|string',
             'password' => 'required|string',
+        ], [
+            'name.required' => 'El nombre de usuario es obligatorio.',
+            'password.required' => 'La contraseña es obligatoria.',
         ]);
 
         // Recuperamos por 'name' (admin) y validamos password
         $user = User::where('name', $request->name)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user, true);
+            // Login usando guard 'admin' explícitamente
+            Auth::guard('admin')->login($user, true);
+            $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        return back()->withErrors(['name' => 'Credenciales inválidas'])->withInput();
+        // Mensaje genérico para no revelar si el usuario existe
+        return back()->withErrors(['name' => 'Las credenciales proporcionadas son incorrectas.'])->withInput();
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Logout usando guard 'admin' explícitamente
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('admin.login');

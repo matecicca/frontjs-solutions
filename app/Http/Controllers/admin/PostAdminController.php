@@ -29,6 +29,19 @@ class PostAdminController extends Controller
         'contenido' => 'required|string',
         'nombre_imagen' => 'nullable|string|max:100',
         'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ], [
+        'titulo.required' => 'El título es obligatorio.',
+        'titulo.max' => 'El título no puede exceder 255 caracteres.',
+        'slug.required' => 'El slug es obligatorio.',
+        'slug.max' => 'El slug no puede exceder 255 caracteres.',
+        'slug.unique' => 'Este slug ya está en uso. Debe ser único.',
+        'resumen.required' => 'El resumen es obligatorio.',
+        'resumen.max' => 'El resumen no puede exceder 500 caracteres.',
+        'contenido.required' => 'El contenido es obligatorio.',
+        'nombre_imagen.max' => 'El nombre de la imagen no puede exceder 100 caracteres.',
+        'imagen.image' => 'El archivo debe ser una imagen.',
+        'imagen.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png o webp.',
+        'imagen.max' => 'La imagen no puede exceder 2MB.',
     ]);
 
     // Subida de la imagen si existe
@@ -73,6 +86,19 @@ class PostAdminController extends Controller
         'contenido' => 'required|string',
         'nombre_imagen' => 'nullable|string|max:100',
         'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ], [
+        'titulo.required' => 'El título es obligatorio.',
+        'titulo.max' => 'El título no puede exceder 255 caracteres.',
+        'slug.required' => 'El slug es obligatorio.',
+        'slug.max' => 'El slug no puede exceder 255 caracteres.',
+        'slug.unique' => 'Este slug ya está en uso. Debe ser único.',
+        'resumen.required' => 'El resumen es obligatorio.',
+        'resumen.max' => 'El resumen no puede exceder 500 caracteres.',
+        'contenido.required' => 'El contenido es obligatorio.',
+        'nombre_imagen.max' => 'El nombre de la imagen no puede exceder 100 caracteres.',
+        'imagen.image' => 'El archivo debe ser una imagen.',
+        'imagen.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png o webp.',
+        'imagen.max' => 'La imagen no puede exceder 2MB.',
     ]);
 
     $imageName = $post->imagen; // mantener la actual por defecto
