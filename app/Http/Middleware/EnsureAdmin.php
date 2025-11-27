@@ -10,12 +10,15 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureAdmin
 {
     /**
-     * Handle an incoming request.
+     * Maneja una solicitud entrante.
      *
      * Verifica que el usuario esté autenticado con el guard 'admin'
-     * y que tenga el role 'admin'.
+     * y que tenga el role 'admin'. Si no cumple alguna condición,
+     * redirige al login de admin o al home según corresponda.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next): Response
     {

@@ -10,6 +10,9 @@ class UserAdminController extends Controller
 {
     /**
      * Muestra la lista paginada de usuarios.
+     * Los usuarios se ordenan por fecha de creación descendente (más recientes primero).
+     *
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -21,9 +24,11 @@ class UserAdminController extends Controller
     }
 
     /**
-     * Muestra el detalle de un usuario específico.
-     *
+     * Muestra el detalle completo de un usuario específico.
      * Usa Route Model Binding para obtener automáticamente el usuario.
+     *
+     * @param \App\Models\User $user
+     * @return \Illuminate\View\View
      */
     public function show(User $user)
     {

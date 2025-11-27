@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Auth;
 class AdminAuthController extends Controller
 {
     /**
-     * Muestra el formulario de login del panel.
-     * Si ya hay sesión admin, redirige al dashboard.
+     * Muestra el formulario de login del panel de administración.
+     * Si ya hay sesión activa de admin, redirige al dashboard.
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function showLoginForm()
     {
@@ -23,6 +25,10 @@ class AdminAuthController extends Controller
 
     /**
      * Procesa el login de administrador.
+     * Valida credenciales y verifica que el usuario tenga rol 'admin'.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function login(Request $request)
     {
@@ -71,11 +77,16 @@ class AdminAuthController extends Controller
     }
 
     /**
-     * Cierra la sesión del administrador.
+     * Cierra la sesión del administrador en ambos guards por seguridad.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request)
     {
+        // Cerrar sesión en ambos guards por seguridad
         Auth::guard('admin')->logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

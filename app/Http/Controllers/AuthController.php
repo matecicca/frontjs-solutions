@@ -11,7 +11,9 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
-     * Muestra el formulario de registro.
+     * Muestra el formulario de registro de usuarios.
+     *
+     * @return \Illuminate\View\View
      */
     public function showRegisterForm()
     {
@@ -19,7 +21,10 @@ class AuthController extends Controller
     }
 
     /**
-     * Registra un nuevo usuario.
+     * Registra un nuevo usuario en el sistema.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function register(Request $request)
     {
@@ -53,7 +58,9 @@ class AuthController extends Controller
     }
 
     /**
-     * Muestra el formulario de login.
+     * Muestra el formulario de inicio de sesión.
+     *
+     * @return \Illuminate\View\View
      */
     public function showLoginForm()
     {
@@ -61,7 +68,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Autentica al usuario.
+     * Autentica al usuario y redirige según su rol.
+     * Usuarios admin son redirigidos al panel de administración con guard 'admin'.
+     * Usuarios comunes son redirigidos al home con guard 'web'.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request)
     {
@@ -75,25 +88,43 @@ class AuthController extends Controller
             'password.required' => 'La contraseña es obligatoria.',
         ]);
 
-        // Intentar autenticación usando el guard 'web'
-        if (Auth::guard('web')->attempt($credentials, $request->filled('remember'))) {
+        // Buscar el usuario por email
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Verificar si el usuario existe y la contraseña es correcta
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => 'Las credenciales proporcionadas son incorrectas.',
+            ]);
+        }
+
+        // Determinar el guard apropiado según el rol del usuario
+        if ($user->isAdmin()) {
+            // Usuario admin: autenticar con guard 'admin' y redirigir al panel admin
+            Auth::guard('admin')->login($user, $request->filled('remember'));
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido/a al panel de administración!');
+        } else {
+            // Usuario normal: autenticar con guard 'web' y redirigir al home
+            Auth::guard('web')->login($user, $request->filled('remember'));
             $request->session()->regenerate();
 
             return redirect()->intended('/')->with('success', '¡Bienvenido/a de nuevo!');
         }
-
-        // Si falla la autenticación (mensaje genérico para no revelar si el email existe)
-        throw ValidationException::withMessages([
-            'email' => 'Las credenciales proporcionadas son incorrectas.',
-        ]);
     }
 
     /**
-     * Cierra la sesión del usuario.
+     * Cierra la sesión del usuario en ambos guards por seguridad.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request)
     {
+        // Cerrar sesión en ambos guards por seguridad
         Auth::guard('web')->logout();
+        Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
