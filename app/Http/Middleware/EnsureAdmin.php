@@ -30,6 +30,7 @@ class EnsureAdmin
         }
 
         // Verificar si el usuario autenticado es admin
+        /** @var \App\Models\User $user */
         $user = Auth::guard('admin')->user();
 
         if (!$user->isAdmin()) {

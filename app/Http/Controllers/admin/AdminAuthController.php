@@ -51,6 +51,7 @@ class AdminAuthController extends Controller
 
         if ($attempt) {
             // Verificar que el usuario autenticado tenga rol 'admin'
+            /** @var \App\Models\User $user */
             $user = Auth::guard('admin')->user();
 
             if (!$user->isAdmin()) {

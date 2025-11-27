@@ -1,8 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tree:*)",
-      "Bash(powershell -Command \"Get-ChildItem -Path ''''c:\\Users\\MATEO\\OneDrive\\Escritorio\\laragon-portable\\www\\frontjs-solutions'''' -Recurse -Exclude node_modules,vendor | Select-Object -ExpandProperty FullName | ForEach-Object { $_eplace(''''c:\\Users\\MATEO\\OneDrive\\Escritorio\\laragon-portable\\www\\frontjs-solutions\\'''', '''''''') }\")"
+      "Bash(php artisan:*)",
+      "Bash(php artisan route:clear:*)",
+      "Bash(php artisan view:clear:*)",
+      "Bash(composer dump-autoload:*)",
+      "Bash(where:*)"
     ],
     "deny": [],
     "ask": []

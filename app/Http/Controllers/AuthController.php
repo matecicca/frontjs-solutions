@@ -89,6 +89,7 @@ class AuthController extends Controller
         ]);
 
         // Buscar el usuario por email
+        /** @var \App\Models\User|null $user */
         $user = User::where('email', $credentials['email'])->first();
 
         // Verificar si el usuario existe y la contraseña es correcta
