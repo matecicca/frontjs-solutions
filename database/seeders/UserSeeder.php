@@ -10,14 +10,25 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crea o actualiza el usuario admin
+        // 🔹 Usuario administrador
         User::updateOrCreate(
-            ['name' => 'admin'],                             // buscamos por nombre
+            ['email' => 'admin@frontjs-solutions.test'], // buscamos por email para evitar duplicados
             [
-                'name' => 'admin',
-                'email' => 'admin@frontjs-solutions.test',   // email fijo para referencia
-                'password' => Hash::make('pass123'),         // contraseña: pass123
-                'role' => 'admin',                           // asignar role de admin
+                'name'     => 'admin',
+                'email'    => 'admin@frontjs-solutions.test',
+                'password' => Hash::make('pass123'), // contraseña: pass123
+                'role'     => 'admin',               // rol administrador
+            ]
+        );
+
+        // 🔹 Usuario estándar (no admin)
+        User::updateOrCreate(
+            ['email' => 'claudio@gmail.com'],       // buscamos por email
+            [
+                'name'     => 'claudio',
+                'email'    => 'claudio@gmail.com',
+                'password' => Hash::make('pass123'), // misma contraseña: pass123
+                'role'     => 'user',                // rol usuario común
             ]
         );
     }

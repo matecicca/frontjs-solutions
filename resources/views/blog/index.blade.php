@@ -1,4 +1,7 @@
-@php use Illuminate\Support\Str; @endphp
+@php
+    use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Storage;
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -13,8 +16,11 @@
                 <div class="col">
                     <article class="card h-100">
                         @if($post->imagen)
-                            <img src="{{ asset('images/' . $post->imagen) }}" class="card-img-top img-fluid" alt="{{ $post->titulo }}">
+                        <img src="{{ Storage::url($post->imagen) }}"
+                        class="card-img-top img-fluid"
+                        alt="{{ $post->titulo }}">
                         @endif
+
                         <div class="card-body d-flex flex-column">
                             <h2 class="h4 card-title">{{ $post->titulo }}</h2>
                             <p class="text-muted small mb-2">{{ $post->created_at->format('d/m/Y') }}</p>
