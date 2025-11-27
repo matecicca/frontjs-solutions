@@ -75,7 +75,9 @@ class AdminAuthController extends Controller
      */
     public function logout(Request $request)
     {
+        // Cerrar sesión en ambos guards por seguridad
         Auth::guard('admin')->logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -75,17 +75,30 @@ class AuthController extends Controller
             'password.required' => 'La contraseña es obligatoria.',
         ]);
 
-        // Intentar autenticación usando el guard 'web'
-        if (Auth::guard('web')->attempt($credentials, $request->filled('remember'))) {
+        // Buscar el usuario por email
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Verificar si el usuario existe y la contraseña es correcta
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => 'Las credenciales proporcionadas son incorrectas.',
+            ]);
+        }
+
+        // Determinar el guard apropiado según el rol del usuario
+        if ($user->isAdmin()) {
+            // Usuario admin: autenticar con guard 'admin' y redirigir al panel admin
+            Auth::guard('admin')->login($user, $request->filled('remember'));
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido/a al panel de administración!');
+        } else {
+            // Usuario normal: autenticar con guard 'web' y redirigir al home
+            Auth::guard('web')->login($user, $request->filled('remember'));
             $request->session()->regenerate();
 
             return redirect()->intended('/')->with('success', '¡Bienvenido/a de nuevo!');
         }
-
-        // Si falla la autenticación (mensaje genérico para no revelar si el email existe)
-        throw ValidationException::withMessages([
-            'email' => 'Las credenciales proporcionadas son incorrectas.',
-        ]);
     }
 
     /**
@@ -93,7 +106,9 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        // Cerrar sesión en ambos guards por seguridad
         Auth::guard('web')->logout();
+        Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
