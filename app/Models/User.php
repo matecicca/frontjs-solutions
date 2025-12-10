@@ -70,4 +70,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    /**
+     * Relación: Un usuario tiene muchas solicitudes de servicio.
+     * Relación One-to-Many con el modelo Request.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function serviceRequests()
+    {
+        return $this->hasMany(Request::class);
+    }
 }

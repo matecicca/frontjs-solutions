@@ -2,63 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Request as RequestModel;
+use App\Http\Requests\StoreServiceRequestRequest;
 
 class RequestController extends Controller
 {
     /**
      * Muestra el formulario de solicitud de servicio.
-     * Si hay un usuario autenticado, precarga su email en el formulario.
+     * El usuario debe estar autenticado (protegido por middleware).
      *
      * @return \Illuminate\View\View
      */
     public function create()
     {
-        // Obtener el usuario autenticado (si existe) del guard 'web'
         $user = Auth::guard('web')->user();
 
-        // Pasar el email del usuario autenticado a la vista (o null si no está autenticado)
-        $userEmail = $user ? $user->email : null;
-
-        return view('request.create', compact('userEmail'));
+        return view('request.create', [
+            'user' => $user,
+        ]);
     }
 
     /**
      * Procesa y guarda una nueva solicitud de servicio.
+     * El user_id se toma del usuario autenticado, no del formulario.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param StoreServiceRequestRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreServiceRequestRequest $request)
     {
-        // Validaciones del formulario con mensajes personalizados
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'empresa' => 'nullable|string|max:255',
-            'tipo_servicio' => 'required|string|max:255',
-            'descripcion_proyecto' => 'required|string|min:10|max:1000',
-        ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.max' => 'El nombre no puede exceder 255 caracteres.',
-            'email.required' => 'El email es obligatorio.',
-            'email.email' => 'Debe ser un email válido.',
-            'email.max' => 'El email no puede exceder 255 caracteres.',
-            'empresa.max' => 'El nombre de la empresa no puede exceder 255 caracteres.',
-            'tipo_servicio.required' => 'Debe seleccionar un tipo de servicio.',
-            'descripcion_proyecto.required' => 'La descripción del proyecto es obligatoria.',
-            'descripcion_proyecto.min' => 'La descripción debe tener al menos 10 caracteres.',
-            'descripcion_proyecto.max' => 'La descripción no puede exceder 1000 caracteres.',
+        $user = Auth::guard('web')->user();
+        $validated = $request->validated();
+
+        // Crear la solicitud vinculada al usuario autenticado
+        RequestModel::create([
+            'user_id' => $user->id,
+            'nombre' => $validated['nombre'],
+            'email' => $user->email, // Email del usuario autenticado
+            'empresa' => $validated['empresa'],
+            'tipo_servicio' => $validated['tipo_servicio'],
+            'descripcion_proyecto' => $validated['descripcion_proyecto'],
+            'status' => RequestModel::STATUS_REVISION, // Estado inicial
         ]);
 
-        // Guardar en la base de datos
-        RequestModel::create($validated);
-
-        // Redirigir con mensaje de éxito
+        // Redirigir a "Mis Servicios" con mensaje de éxito
         return redirect()
-            ->route('request.create')
-            ->with('success', 'Tu solicitud ha sido enviada correctamente. Nos pondremos en contacto pronto.');
+            ->route('user.services.index')
+            ->with('success', 'Tu solicitud ha sido enviada correctamente y está en revisión. Te notificaremos cuando sea procesada.');
     }
 }

@@ -4,6 +4,11 @@
 <div class="container" style="max-width: 760px;">
     <h1 class="mb-4">Solicitar un Servicio</h1>
 
+    {{-- Info del usuario logueado --}}
+    <div class="alert alert-info mb-4">
+        <strong>Usuario:</strong> {{ $user->name }} ({{ $user->email }})
+    </div>
+
     {{-- Mensaje de éxito --}}
     @if (session('success'))
         <div class="alert alert-success">
@@ -26,8 +31,8 @@
         @csrf
 
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}"
+            <label for="nombre" class="form-label">Nombre completo</label>
+            <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $user->name) }}"
                    class="form-control @error('nombre') is-invalid @enderror" required>
             @error('nombre')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -36,11 +41,9 @@
 
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" value="{{ old('email', $userEmail ?? '') }}"
-                   class="form-control @error('email') is-invalid @enderror" required>
-            @error('email')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input type="email" id="email" value="{{ $user->email }}"
+                   class="form-control" disabled>
+            <small class="text-muted">El email de tu cuenta será usado para esta solicitud.</small>
         </div>
 
         <div class="mb-3">
@@ -74,9 +77,13 @@
             @error('descripcion_proyecto')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+            <small class="text-muted">Mínimo 10 caracteres. Describe tu proyecto con el mayor detalle posible.</small>
         </div>
 
-        <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+            <a href="{{ route('user.services.index') }}" class="btn btn-outline-secondary">Ver mis solicitudes</a>
+        </div>
     </form>
 </div>
 @endsection

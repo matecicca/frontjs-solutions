@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserServiceController;
 
 // Controladores del panel
 use App\Http\Controllers\Admin\AdminController;
@@ -22,10 +23,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
-// Formulario de solicitud de servicio
-Route::get('/solicitar', [RequestController::class, 'create'])->name('request.create');
-Route::post('/solicitar', [RequestController::class, 'store'])->name('request.store');
-
 /*
 | Rutas de autenticación para usuarios comunes (guard web)
 */
@@ -39,6 +36,19 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 // Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/*
+| Rutas protegidas para usuarios autenticados (guard web)
+*/
+Route::middleware(['auth:web'])->group(function () {
+    // Formulario de solicitud de servicio (solo usuarios logueados)
+    Route::get('/solicitar', [RequestController::class, 'create'])->name('request.create');
+    Route::post('/solicitar', [RequestController::class, 'store'])->name('request.store');
+
+    // Mis servicios - historial de solicitudes del usuario
+    Route::get('/mis-servicios', [UserServiceController::class, 'index'])->name('user.services.index');
+    Route::get('/mis-servicios/{id}', [UserServiceController::class, 'show'])->name('user.services.show');
+});
 
 /*
 | Rutas de autenticación del panel de administración
@@ -64,8 +74,10 @@ Route::prefix('admin')->middleware(['auth:admin', 'admin'])->group(function () {
     // CRUD de posts del blog
     Route::resource('posts', PostAdminController::class)->except(['show']);
 
-    // Listado y eliminación de solicitudes
+    // Gestión de solicitudes de servicio
     Route::get('requests', [RequestAdminController::class, 'index'])->name('admin.requests.index');
+    Route::get('requests/{id}', [RequestAdminController::class, 'show'])->name('admin.requests.show');
+    Route::put('requests/{id}/status', [RequestAdminController::class, 'updateStatus'])->name('admin.requests.updateStatus');
     Route::delete('requests/{id}', [RequestAdminController::class, 'destroy'])->name('admin.requests.destroy');
 
     // Gestión de usuarios (solo lectura)

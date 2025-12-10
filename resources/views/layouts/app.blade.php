@@ -38,12 +38,30 @@
                         Blog
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('request.*') ? 'active' : '' }}"
-                       href="{{ route('request.create') }}">
-                        Solicitar servicio
-                    </a>
-                </li>
+
+                {{-- Enlaces para usuarios logueados --}}
+                @if(Auth::guard('web')->check())
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('request.*') ? 'active' : '' }}"
+                           href="{{ route('request.create') }}">
+                            Solicitar servicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('user.services.*') ? 'active' : '' }}"
+                           href="{{ route('user.services.index') }}">
+                            Mis Servicios
+                        </a>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}"
+                           href="{{ route('login') }}"
+                           title="Inicia sesión para solicitar servicios">
+                            Solicitar servicio
+                        </a>
+                    </li>
+                @endif
             </ul>
 
             {{-- Zona derecha: admin / usuario / login --}}
@@ -60,18 +78,32 @@
 
                 {{-- Usuario común logueado (guard web) --}}
                 @if(Auth::guard('web')->check())
-                    <li class="nav-item d-flex align-items-center">
-                        <span class="navbar-text text-white me-2">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
                             {{ Auth::guard('web')->user()->name }}
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-light btn-sm">
-                                Cerrar sesión
-                            </button>
-                        </form>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('user.services.index') }}">
+                                    Mis Servicios
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('request.create') }}">
+                                    Nueva Solicitud
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
 
                 {{-- Usuario sólo admin logueado (por si no tiene sesión web) --}}
