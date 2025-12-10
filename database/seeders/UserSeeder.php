@@ -31,5 +31,16 @@ class UserSeeder extends Seeder
                 'role'     => 'user',                // rol usuario común
             ]
         );
+
+        // 🔹 Usuario Mateo
+        User::updateOrCreate(
+            ['email' => 'mateociccarello@gmail.com'],
+            [
+                'name'     => 'Mateo',
+                'email'    => 'mateociccarello@gmail.com',
+                'password' => Hash::make('pass123'), // contraseña: pass123
+                'role'     => 'user',                // rol usuario común
+            ]
+        );
     }
 }
